@@ -24,3 +24,4 @@ Shared/CIPPHttp/obj/
 !/profile.ps1
 .DS_Store
 proxyman.pem
+CLAUDE.md
