@@ -224,28 +224,30 @@ function New-CIPPAlertTemplate {
 
             }
             'Add service principal.' {
-                if ($Appname) { $AppName = $AppName.'Application Name' } else { $appName = $data.ApplicationId }
-                $Title = "$($Tenant) - Service Principal $($data.ObjectId) has been added."
+                $DisplayName = ($data.ModifiedProperties | Where-Object -Property Name -EQ 'DisplayName').NewValue
+                if (-not $DisplayName) { $DisplayName = if ($Appname) { $Appname.'Application Name' } else { $data.ApplicationId } }
+                $Title = "$($Tenant) - Service Principal $DisplayName has been added."
                 $Table = ($data.ModifiedProperties | ConvertTo-Html -Fragment | Out-String).Replace('<table>', ' <table class="table-modern">')
                 if ($ActionResults) { $IntroText = $IntroText + "<p>Based on the rule, the following actions have been taken: $($ActionResults -join '<br/>' )</p>" }
                 if ($LocationInfo) {
                     $LocationTable = ($LocationInfo | ConvertTo-Html -Fragment -As List | Out-String).Replace('<table>', ' <table class="table-modern">')
                     $IntroText = $IntroText + "<p>The (potential) location information for this IP is as follows:</p>$LocationTable"
                 }
-                $IntroText = "$($data.ObjectId) has been added by $($data.UserId)."
+                $IntroText = "Service Principal $DisplayName has been added by $($data.UserId)."
                 $ButtonUrl = "$CIPPURL/tenant/administration/applications/enterprise-apps?tenantFilter=$Tenant"
                 $ButtonText = 'Enterprise Apps'
             }
             'Remove service principal.' {
-                if ($Appname) { $AppName = $AppName.'Application Name' } else { $appName = $data.ApplicationId }
-                $Title = "$($Tenant) - Service Principal $($data.ObjectId) has been removed."
+                $DisplayName = ($data.ModifiedProperties | Where-Object -Property Name -EQ 'DisplayName').NewValue
+                if (-not $DisplayName) { $DisplayName = if ($Appname) { $Appname.'Application Name' } else { $data.ApplicationId } }
+                $Title = "$($Tenant) - Service Principal $DisplayName has been removed."
                 $Table = ($data.CIPPModifiedProperties | ConvertFrom-Json | ConvertTo-Html -Fragment | Out-String).Replace('<table>', ' <table class="table-modern">')
                 if ($ActionResults) { $IntroText = $IntroText + "<p>Based on the rule, the following actions have been taken: $($ActionResults -join '<br/>' )</p>" }
                 if ($LocationInfo) {
                     $LocationTable = ($LocationInfo | ConvertTo-Html -Fragment -As List | Out-String).Replace('<table>', ' <table class="table-modern">')
                     $IntroText = $IntroText + "<p>The (potential) location information for this IP is as follows:</p>$LocationTable"
                 }
-                $IntroText = "$($data.ObjectId) has been removed by $($data.UserId)."
+                $IntroText = "Service Principal $DisplayName has been removed by $($data.UserId)."
                 $ButtonUrl = "$CIPPURL/tenant/administration/applications/enterprise-apps?tenantFilter=$Tenant"
                 $ButtonText = 'Enterprise Apps'
             }
